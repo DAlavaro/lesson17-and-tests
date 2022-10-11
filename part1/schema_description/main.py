@@ -14,6 +14,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 import json
+from marshmallow import Schema, fields
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
@@ -39,15 +40,17 @@ with db.session.begin():
     db.session.add(book)
 
 
-class BookSchema:
-    # TODO напишите схему здесь
-    pass
+class BookSchema(Schema):
+    id = fields.Int(dump_only=True)
+    name = fields.Str()
+    author = fields.Str()
+    year = fields.Int()
 
 
 def serialize():
     book_schema = BookSchema()
     result = Book.query.get(1)
-    return book_schema.dumps(result)
+    return book_schema.dump(result)
 
 
 # данный код нужен для отображения результата запроса
